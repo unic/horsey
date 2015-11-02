@@ -12,6 +12,7 @@ var KEY_DOWN = 40;
 var cache = [];
 var doc = document;
 var docElement = doc.documentElement;
+var c = 0;
 
 function find (el) {
   var entry;
@@ -51,6 +52,7 @@ function horsey (el, options) {
   var anyInput;
   var ranchorleft;
   var ranchorright;
+  var id = 'sey-list-' + c++;
 
   if (o.autoHideOnBlur === void 0) { o.autoHideOnBlur = true; }
   if (o.autoHideOnClick === void 0) { o.autoHideOnClick = true; }
@@ -90,6 +92,11 @@ function horsey (el, options) {
   cache.push(entry);
   parent.appendChild(ul);
   el.setAttribute('autocomplete', 'off');
+  el.setAttribute('role', 'combobox');
+  el.setAttribute('aria-owns', id);
+  el.setAttribute('aria-autocomplete', 'list');
+  ul.setAttribute('id', id);
+  ul.setAttribute('role', 'listbox');
 
   if (Array.isArray(suggestions)) {
     loaded(suggestions);
@@ -125,12 +132,15 @@ function horsey (el, options) {
     }
   }
 
-  function add (suggestion) {
+  function add (suggestion, i) {
     var li = tag('li', 'sey-item');
+    var suggestionId = id + '-' + i;
     render(li, suggestion);
     crossvent.add(li, 'click', clickedSuggestion);
     crossvent.add(li, 'horsey-filter', filterItem);
     crossvent.add(li, 'horsey-hide', hideItem);
+    li.setAttribute('role', 'option');
+    li.setAttribute('id', suggestionId);
     ul.appendChild(li);
     api.suggestions.push(suggestion);
     return li;
@@ -141,6 +151,7 @@ function horsey (el, options) {
       hide();
       attachment.focus();
       crossvent.fabricate(attachment, 'horsey-selected', value);
+      el.setAttribute('aria-activedescendant', suggestionId);
     }
 
     function filterItem () {
@@ -210,6 +221,7 @@ function horsey (el, options) {
     if (suggestion) {
       selection = suggestion;
       selection.className += ' sey-selected';
+      el.setAttribute('aria-activedescendant', selection.getAttribute('id'));
     }
   }
 
@@ -217,6 +229,7 @@ function horsey (el, options) {
     if (selection) {
       selection.className = selection.className.replace(/ sey-selected/g, '');
       selection = null;
+      el.removeAttribute('aria-activedescendant');
     }
   }
 
