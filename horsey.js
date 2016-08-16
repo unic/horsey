@@ -32,7 +32,9 @@ function horsey (el, options = {}) {
     appendTo,
     anchor,
     debounce,
-    scrollToSelectedItem
+    highlighter,
+    highlightCompleteWords,
+    scrollToSelectedItem,
   } = options;
   const caching = options.cache !== false;
   if (!source) {
@@ -78,7 +80,9 @@ function horsey (el, options = {}) {
       (set || completer.defaultSetter)(getText(s), s);
       completer.emit('afterSet');
     },
-    filter
+    filter,
+    highlighter,
+    highlightCompleteWords,
   });
   return completer;
   function noMatches (data) {
