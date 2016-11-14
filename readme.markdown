@@ -116,6 +116,10 @@ By default, items are rendered using the text for a `suggestion`. You can custom
 
 By default, categories are rendered using just their `data.title`. You can customize this behavior by setting `autocomplete.renderCategory` to a function that receives `div, data` parameters. The `div` is a DOM element and the `data` is the full category data object, including the `list` of suggestions. After you customize the `div`, the list of suggestions for the category will be appended to `div`.
 
+## `scrollToSelectedItem`
+
+If set to `true`, this option will make sure that the selected result item is always visible when navigating using the arrow keys if the container is scrollable (e.g. by setting `max-height` and `overflow:auto||scroll` in CSS).
+
 # API
 
 Once you've instantiated a `horsey`, you can do a few more things with it.

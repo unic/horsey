@@ -31,7 +31,8 @@ function horsey (el, options = {}) {
     blankSearch,
     appendTo,
     anchor,
-    debounce
+    debounce,
+    scrollToSelectedItem
   } = options;
   const caching = options.cache !== false;
   if (!source) {
@@ -517,6 +518,15 @@ function autocomplete (el, options = {}) {
       selection = li;
       selection.className += ' sey-selected';
       el.setAttribute('aria-activedescendant', selection.getAttribute('id'));
+    }
+    if (options.scrollToSelectedItem) {
+      // Top edge above fold
+      if (li.offsetTop < container.scrollTop) {
+        container.scrollTop = li.offsetTop;
+      // Bottom edge below fold
+      } else if ((li.offsetTop + li.offsetHeight) > (container.offsetHeight + container.scrollTop)) {
+        container.scrollTop = (li.offsetTop + li.offsetHeight) - container.offsetHeight;
+      }
     }
   }
 

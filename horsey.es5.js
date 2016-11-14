@@ -61,6 +61,7 @@ function horsey(el) {
   var appendTo = options.appendTo;
   var anchor = options.anchor;
   var debounce = options.debounce;
+  var scrollToSelectedItem = options.scrollToSelectedItem;
 
   var caching = options.cache !== false;
   if (!source) {
@@ -684,6 +685,15 @@ function autocomplete(el) {
       selection = li;
       selection.className += ' sey-selected';
       el.setAttribute('aria-activedescendant', selection.getAttribute('id'));
+    }
+    if (options.scrollToSelectedItem) {
+      // Top edge above fold
+      if (li.offsetTop < container.scrollTop) {
+        container.scrollTop = li.offsetTop;
+        // Bottom edge below fold
+      } else if (li.offsetTop + li.offsetHeight > container.offsetHeight + container.scrollTop) {
+        container.scrollTop = li.offsetTop + li.offsetHeight - container.offsetHeight;
+      }
     }
   }
 
