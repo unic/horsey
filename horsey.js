@@ -608,7 +608,7 @@ function autocomplete (el, options = {}) {
         show();
       }
     } else if (shown) {
-      if (which === KEY_ENTER) {
+      if (which === KEY_ENTER || KEY_TAB) {
         if (selection) {
           crossvent.fabricate(selection, 'click');
         } else {
