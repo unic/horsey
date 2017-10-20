@@ -665,7 +665,7 @@ function autocomplete(el) {
         show();
       }
     } else if (shown) {
-      if (which === KEY_ENTER) {
+      if (which === KEY_ENTER || which === KEY_TAB) {
         if (selection) {
           _crossvent2.default.fabricate(selection, 'click');
         } else {
