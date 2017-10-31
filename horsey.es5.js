@@ -445,7 +445,7 @@ function autocomplete(el) {
       whole();
     }
     fuzzy();
-    clearRemainder();
+    // clearRemainder();
 
     function balance() {
       chars = elems.map(function (el) {
@@ -541,10 +541,7 @@ function autocomplete(el) {
     }
 
     function on(ch) {
-      // Timeout added because of desynchronisation between on and off function when changing the input value
-      setTimeout(function() {
-        ch.classList.add('sey-char-highlight');
-      }, 0);
+      ch.classList.add('sey-char-highlight');
     }
     function off(ch) {
       ch.classList.remove('sey-char-highlight');

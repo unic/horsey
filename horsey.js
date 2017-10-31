@@ -396,7 +396,7 @@ function autocomplete (el, options = {}) {
       whole();
     }
     fuzzy();
-    clearRemainder();
+    // clearRemainder();
 
     function balance () {
       chars = elems.map(el => el.innerText || el.textContent);
@@ -489,9 +489,7 @@ function autocomplete (el, options = {}) {
     }
 
     function on (ch) {
-      setTimeout(function () {
-        ch.classList.add('sey-char-highlight');
-      }, 0);
+      ch.classList.add('sey-char-highlight');
     }
     function off (ch) {
       ch.classList.remove('sey-char-highlight');
