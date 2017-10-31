@@ -42,13 +42,13 @@ function horsey (el, options = {}) {
   const userGetValue = options.getValue;
   const getText = (
     typeof userGetText === 'string' ? d => d[userGetText] :
-    typeof userGetText === 'function' ? userGetText :
-    d => d.toString()
+      typeof userGetText === 'function' ? userGetText :
+        d => d.toString()
   );
   const getValue = (
     typeof userGetValue === 'string' ? d => d[userGetValue] :
-    typeof userGetValue === 'function' ? userGetValue :
-    d => d
+      typeof userGetValue === 'function' ? userGetValue :
+        d => d
   );
 
   let previousSuggestions = [];
@@ -433,17 +433,53 @@ function autocomplete (el, options = {}) {
     }
 
     function fuzzy () {
-      for (let i = 0, chars = needle.split(''); i < chars.length; i++) {
-        while (elems.length) {
-          let el = elems.shift();
-          if ((el.innerText || el.textContent) === chars[i]) {
-            on(el);
-            break;
-          } else {
-            off(el);
-          }
+      // override of initial fuzzy method
+      let concatenatedElems = getFullElementString().toLowerCase(),
+        concatenatedString = needle.toLowerCase();
+
+      for (let i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
+
+        // break when string have only one letter
+        if (concatenatedString.length === 1) break;
+
+        // calculate substrincOccurancesPositions
+        let substringPositions = allIndexOf(concatenatedElems, concatenatedString);
+
+        for (let j = 0; j < substringPositions.length; j++) {
+          // highlight all positions
+          checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+        }
+
+        // check for occurances of substrings
+        concatenatedString = concatenatedString.substr(0, concatenatedString.length - 1);
+      }
+    }
+
+    // function to check the matched string value
+    function checkNeedle (index, elems, concatenatedString, concatenatedElems) {
+      if (-~concatenatedElems.indexOf(concatenatedString, index)) {
+        for (let k = concatenatedElems.indexOf(concatenatedString, index); k < concatenatedElems.indexOf(concatenatedString, index) + concatenatedString.length; k++) {
+          on(elems[k]);
         }
       }
+    }
+
+    // concatenate element
+    function getFullElementString () {
+      let fullElementString = '';
+      for (let i = 0; i < elems.length; i++) {
+        fullElementString += elems[i].innerText || elems[i].innerContent;
+      }
+
+      return fullElementString;
+    }
+
+    function allIndexOf (str, toSearch) {
+      let indices = [];
+      for(let pos = str.indexOf(toSearch); pos !== -1; pos = str.indexOf(toSearch, pos + 1)) {
+        indices.push(pos);
+      }
+      return indices;
     }
 
     function clearRemainder () {
@@ -453,7 +489,9 @@ function autocomplete (el, options = {}) {
     }
 
     function on (ch) {
-      ch.classList.add('sey-char-highlight');
+      setTimeout(function () {
+        ch.classList.add('sey-char-highlight');
+      }, 0);
     }
     function off (ch) {
       ch.classList.remove('sey-char-highlight');

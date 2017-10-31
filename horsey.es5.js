@@ -484,17 +484,54 @@ function autocomplete(el) {
     }
 
     function fuzzy() {
+
+      // override of initial fuzzy method
+      var concatenatedElems = getFullElementString().toLowerCase(),
+        concatenatedString = needle.toLowerCase();
+
       for (var i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
-        while (elems.length) {
-          var _el = elems.shift();
-          if ((_el.innerText || _el.textContent) === _chars2[i]) {
-            on(_el);
-            break;
-          } else {
-            off(_el);
-          }
+
+        // break when string have only one letter
+        if (concatenatedString.length === 1) break;
+
+        // calculate substrincOccurancesPositions
+        var substringPositions = allIndexOf(concatenatedElems, concatenatedString);
+
+        for (var j = 0; j < substringPositions.length; j++) {
+          // highlight all positions
+          checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+        }
+
+        // check for occurances of substrings
+        concatenatedString = concatenatedString.substr(0, concatenatedString.length - 1);
+      }
+    }
+
+    // function to check the matched string value
+    function checkNeedle(index, elems, concatenatedString, concatenatedElems) {
+      if (-~concatenatedElems.indexOf(concatenatedString, index)) {
+        for (var k = concatenatedElems.indexOf(concatenatedString, index); k < concatenatedElems.indexOf(concatenatedString, index) + concatenatedString.length; k++) {
+          on(elems[k]);
         }
       }
+    }
+
+    // concatenate element
+    function getFullElementString() {
+      var fullElementString = '';
+      for (var i = 0; i < elems.length; i++) {
+        fullElementString += elems[i].innerText || elems[i].innerContent;
+      }
+
+      return fullElementString;
+    }
+
+    function allIndexOf(str, toSearch) {
+      var indices = [];
+      for(var pos = str.indexOf(toSearch); pos !== -1; pos = str.indexOf(toSearch, pos + 1)) {
+        indices.push(pos);
+      }
+      return indices;
     }
 
     function clearRemainder() {
@@ -504,7 +541,10 @@ function autocomplete(el) {
     }
 
     function on(ch) {
-      ch.classList.add('sey-char-highlight');
+      // Timeout added because of desynchronisation between on and off function when changing the input value
+      setTimeout(function() {
+        ch.classList.add('sey-char-highlight');
+      }, 0);
     }
     function off(ch) {
       ch.classList.remove('sey-char-highlight');
