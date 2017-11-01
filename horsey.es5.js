@@ -491,9 +491,6 @@ function autocomplete(el) {
 
       for (var i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
 
-        // break when string have only one letter
-        if (concatenatedString.length === 1) break;
-
         // calculate substrincOccurancesPositions
         var substringPositions = allIndexOf(concatenatedElems, concatenatedString);
 
