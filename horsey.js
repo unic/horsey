@@ -435,7 +435,8 @@ function autocomplete (el, options = {}) {
     function fuzzy () {
       // override of initial fuzzy method
       let concatenatedElems = getFullElementString().toLowerCase(),
-        concatenatedString = needle.toLowerCase();
+        concatenatedString = needle.toLowerCase(),
+        isLongestOccuranceShown = false;
 
       for (let i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
 
@@ -444,9 +445,16 @@ function autocomplete (el, options = {}) {
 
         for (let j = 0; j < substringPositions.length; j++) {
           // highlight all positions
-          checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+          isLongestOccuranceShown = checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+
+          if (isLongestOccuranceShown) {
+            break;
+          }
         }
 
+        if (isLongestOccuranceShown) {
+          break;
+        }
         // check for occurances of substrings
         concatenatedString = concatenatedString.substr(0, concatenatedString.length - 1);
       }
@@ -458,7 +466,11 @@ function autocomplete (el, options = {}) {
         for (let k = concatenatedElems.indexOf(concatenatedString, index); k < concatenatedElems.indexOf(concatenatedString, index) + concatenatedString.length; k++) {
           on(elems[k]);
         }
+
+        return true;
       }
+
+      return false;
     }
 
     // concatenate element

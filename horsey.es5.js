@@ -487,7 +487,8 @@ function autocomplete(el) {
 
       // override of initial fuzzy method
       var concatenatedElems = getFullElementString().toLowerCase(),
-        concatenatedString = needle.toLowerCase();
+        concatenatedString = needle.toLowerCase(),
+        isLongestOccuranceShown = false;
 
       for (var i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
 
@@ -496,7 +497,15 @@ function autocomplete(el) {
 
         for (var j = 0; j < substringPositions.length; j++) {
           // highlight all positions
-          checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+          isLongestOccuranceShown = checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems);
+
+          if (isLongestOccuranceShown) {
+            break;
+          }
+        }
+
+        if (isLongestOccuranceShown) {
+          break;
         }
 
         // check for occurances of substrings
@@ -510,7 +519,11 @@ function autocomplete(el) {
         for (var k = concatenatedElems.indexOf(concatenatedString, index); k < concatenatedElems.indexOf(concatenatedString, index) + concatenatedString.length; k++) {
           on(elems[k]);
         }
+
+        return true;
       }
+
+      return false;
     }
 
     // concatenate element
