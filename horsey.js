@@ -31,7 +31,8 @@ function horsey (el, options = {}) {
     blankSearch,
     appendTo,
     anchor,
-    debounce
+    debounce,
+    highlighter
   } = options;
   const caching = options.cache !== false;
   if (!source) {
@@ -69,6 +70,7 @@ function horsey (el, options = {}) {
     noMatchesText: options.noMatches,
     blankSearch,
     debounce,
+    highlighter,
     set (s) {
       if (setAppends !== true) {
         el.value = '';
@@ -445,7 +447,7 @@ function autocomplete (el, options = {}) {
 
         for (let j = 0; j < substringPositions.length; j++) {
           // highlight all positions
-          isLongestOccuranceShown = checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems)
+          isLongestOccuranceShown = checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems);
 
           if (isLongestOccuranceShown) {
             break;
