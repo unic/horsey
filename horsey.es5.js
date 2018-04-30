@@ -547,7 +547,9 @@ function autocomplete(el) {
   }
 
   function show() {
-    eye.refresh();
+    if (eye) {
+      eye.refresh();
+    }
     if (!visible()) {
       container.className += ' sey-show';
       _crossvent2.default.fabricate(attachment, 'horsey-show');
