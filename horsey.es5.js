@@ -681,7 +681,7 @@ function autocomplete(el) {
   }
 
   function hide() {
-    eye.sleep();
+    if (eye) { eye.sleep(); }
     container.className = container.className.replace(/ sey-show/g, '');
     unselect();
     _crossvent2.default.fabricate(attachment, 'horsey-hide');

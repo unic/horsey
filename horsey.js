@@ -622,7 +622,7 @@ function autocomplete (el, options = {}) {
   }
 
   function hide () {
-    eye.sleep();
+    if (eye) { eye.sleep(); }
     container.className = container.className.replace(/ sey-show/g, '');
     unselect();
     crossvent.fabricate(attachment, 'horsey-hide');
