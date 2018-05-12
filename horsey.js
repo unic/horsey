@@ -31,7 +31,8 @@ function horsey (el, options = {}) {
     blankSearch,
     appendTo,
     anchor,
-    debounce
+    debounce,
+    highlighter
   } = options;
   const caching = options.cache !== false;
   if (!source) {
@@ -42,13 +43,13 @@ function horsey (el, options = {}) {
   const userGetValue = options.getValue;
   const getText = (
     typeof userGetText === 'string' ? d => d[userGetText] :
-    typeof userGetText === 'function' ? userGetText :
-    d => d.toString()
+      typeof userGetText === 'function' ? userGetText :
+        d => d.toString()
   );
   const getValue = (
     typeof userGetValue === 'string' ? d => d[userGetValue] :
-    typeof userGetValue === 'function' ? userGetValue :
-    d => d
+      typeof userGetValue === 'function' ? userGetValue :
+        d => d
   );
 
   let previousSuggestions = [];
@@ -69,6 +70,7 @@ function horsey (el, options = {}) {
     noMatchesText: options.noMatches,
     blankSearch,
     debounce,
+    highlighter,
     set (s) {
       if (setAppends !== true) {
         el.value = '';
@@ -396,7 +398,7 @@ function autocomplete (el, options = {}) {
       whole();
     }
     fuzzy();
-    clearRemainder();
+    // clearRemainder();
 
     function balance () {
       chars = elems.map(el => el.innerText || el.textContent);
@@ -433,17 +435,62 @@ function autocomplete (el, options = {}) {
     }
 
     function fuzzy () {
-      for (let i = 0, chars = needle.split(''); i < chars.length; i++) {
-        while (elems.length) {
-          let el = elems.shift();
-          if ((el.innerText || el.textContent) === chars[i]) {
-            on(el);
+      // override of initial fuzzy method
+      let concatenatedElems = getFullElementString().toLowerCase(),
+        concatenatedString = needle.toLowerCase(),
+        isLongestOccuranceShown = false;
+
+      for (let i = 0, _chars2 = needle.split(''); i < _chars2.length; i++) {
+
+        // calculate substrincOccurancesPositions
+        let substringPositions = allIndexOf(concatenatedElems, concatenatedString);
+
+        for (let j = 0; j < substringPositions.length; j++) {
+          // highlight all positions
+          isLongestOccuranceShown = checkNeedle(substringPositions[j], elems, concatenatedString, concatenatedElems);
+
+          if (isLongestOccuranceShown) {
             break;
-          } else {
-            off(el);
           }
         }
+
+        if (isLongestOccuranceShown) {
+          break;
+        }
+        // check for occurances of substrings
+        concatenatedString = concatenatedString.substr(0, concatenatedString.length - 1);
       }
+    }
+
+    // function to check the matched string value
+    function checkNeedle (index, elems, concatenatedString, concatenatedElems) {
+      if (-~concatenatedElems.indexOf(concatenatedString, index)) {
+        for (let k = concatenatedElems.indexOf(concatenatedString, index); k < concatenatedElems.indexOf(concatenatedString, index) + concatenatedString.length; k++) {
+          on(elems[k]);
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    // concatenate element
+    function getFullElementString () {
+      let fullElementString = '';
+      for (let i = 0; i < elems.length; i++) {
+        fullElementString += elems[i].innerText || elems[i].innerContent;
+      }
+
+      return fullElementString;
+    }
+
+    function allIndexOf (str, toSearch) {
+      let indices = [];
+      for(let pos = str.indexOf(toSearch); pos !== -1; pos = str.indexOf(toSearch, pos + 1)) {
+        indices.push(pos);
+      }
+      return indices;
     }
 
     function clearRemainder () {
@@ -575,7 +622,7 @@ function autocomplete (el, options = {}) {
   }
 
   function hide () {
-    eye.sleep();
+    if (eye) { eye.sleep(); }
     container.className = container.className.replace(/ sey-show/g, '');
     unselect();
     crossvent.fabricate(attachment, 'horsey-hide');
