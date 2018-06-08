@@ -395,12 +395,7 @@ function autocomplete(el) {
     }
 
     function filterItem() {
-      var value = readInput();
-      if (filter(value, suggestion)) {
-        li.className = li.className.replace(/ sey-hide/g, '');
-      } else {
-        _crossvent2.default.fabricate(li, 'horsey-hide');
-      }
+      li.className = li.className.replace(/ sey-hide/g, '');
     }
 
     function hideItem() {
