@@ -59,7 +59,8 @@ function horsey(el) {
       appendTo = options.appendTo,
       anchor = options.anchor,
       debounce = options.debounce,
-      highlighter = options.highlighter;
+      highlighter = options.highlighter,
+      scrollToSelectedItem = options.scrollToSelectedItem;
 
   var caching = options.cache !== false;
   if (!source) {
@@ -98,6 +99,7 @@ function horsey(el) {
     blankSearch: blankSearch,
     debounce: debounce,
     highlighter: highlighter,
+    scrollToSelectedItem: scrollToSelectedItem,
     set: function set(s) {
       if (setAppends !== true) {
         el.value = '';
@@ -625,6 +627,16 @@ function autocomplete(el) {
       selection = li;
       selection.className += ' sey-selected';
       el.setAttribute('aria-activedescendant', selection.getAttribute('id'));
+
+      if (options.scrollToSelectedItem) {
+        // Top edge above fold
+        if (li.offsetTop < container.scrollTop) {
+          container.scrollTop = li.offsetTop;
+          // Bottom edge below fold
+        } else if (li.offsetTop + li.offsetHeight > container.offsetHeight + container.scrollTop) {
+          container.scrollTop = li.offsetTop + li.offsetHeight - container.offsetHeight;
+        }
+      }
     }
   }
 
@@ -681,7 +693,9 @@ function autocomplete(el) {
   }
 
   function hide() {
-    if (eye) { eye.sleep(); }
+    if (eye) {
+      eye.sleep();
+    }
     container.className = container.className.replace(/ sey-show/g, '');
     unselect();
     _crossvent2.default.fabricate(attachment, 'horsey-hide');
